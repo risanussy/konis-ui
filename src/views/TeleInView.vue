@@ -26,8 +26,12 @@
                     <input v-model="form.tembusan" type="text" class="form-control">
                   </div>
                   <div class="mb-3">
+                    <label class="form-label">Tanggal Masuk</label>
+                    <input v-model="form.tanggal_masuk" type="date" class="form-control">
+                  </div>
+                  <div class="mb-3">
                     <label class="form-label">Jenis Telegram</label>
-                    <select v-model="form.jenisTelegram" class="form-select">
+                    <select v-model="form.jenis_telegram" class="form-select">
                       <option value="Terbuka">Terbuka</option>
                       <option value="Tertutup">Tertutup</option>
                     </select>
@@ -48,11 +52,11 @@
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Nomor</label>
-                    <input v-model="form.nomor" type="text" class="form-control">
+                    <input v-model="form.no" type="text" class="form-control">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Waktu Penunjukan</label>
-                    <input v-model="form.waktuPenunjukan" type="text" class="form-control">
+                    <input v-model="form.tanggal_waktu_penunjukan" type="date" class="form-control">
                   </div>
                 </div>
               </div>
@@ -65,37 +69,38 @@
         </div>
       </div>
     </div>
-
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">No</th>
-          <th scope="col">Dari</th>
-          <th scope="col">Kepada</th>
-          <th scope="col">Tembusan</th>
-          <th scope="col">Klasifikasi</th>
-          <th scope="col">Jenis Telegram</th>
-          <th scope="col">Nomor</th>
-          <th scope="col">Waktu Penunjukan</th>
-          <th scope="col">Tanggal Masuk</th>
-          <th scope="col">Isi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in telegramMasukData" :key="item.id">
-          <td>{{ index + 1 }}</td>
-          <td>{{ item.dari }}</td>
-          <td>{{ item.kepada }}</td>
-          <td>{{ item.tembusan }}</td>
-          <td>{{ item.klasifikasi }}</td>
-          <td>{{ item.jenisTelegram }}</td>
-          <td>{{ item.nomor }}</td>
-          <td>{{ item.waktuPenunjukan }}</td>
-          <td>{{ item.tanggalMasuk }}</td>
-          <td>{{ item.isi }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">Dari</th>
+            <th scope="col">Kepada</th>
+            <th scope="col">Tembusan</th>
+            <th scope="col">Klasifikasi</th>
+            <th scope="col">Jenis Telegram</th>
+            <th scope="col">Nomor</th>
+            <th scope="col">Waktu Penunjukan</th>
+            <th scope="col">Tanggal Masuk</th>
+            <th scope="col">Isi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in telegramMasukData" :key="item.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.dari }}</td>
+            <td>{{ item.kepada }}</td>
+            <td>{{ item.tembusan }}</td>
+            <td>{{ item.klasifikasi }}</td>
+            <td>{{ item.jenis_telegram }}</td>
+            <td>{{ item.no }}</td>
+            <td>{{ item.tanggal_waktu_penunjukan }}</td>
+            <td>{{ item.tanggal_masuk }}</td>
+            <td>{{ item.isi }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -111,10 +116,10 @@ export default {
         kepada: '',
         tembusan: '',
         klasifikasi: '',
-        jenisTelegram: '',
-        nomor: '',
-        waktuPenunjukan: '',
-        tanggalMasuk: '',
+        jenis_telegram: '',
+        no: '',
+        tanggal_waktu_penunjukan: '',
+        tanggal_masuk: '',
         isi: ''
       },
       telegramMasukData: []
@@ -123,7 +128,7 @@ export default {
   methods: {
     async submitData() {
       try {
-        await axios.post('http://localhost:8000/suratMasuk/add', this.form);
+        await axios.post('http://localhost:8000/api/suratMasuk/add', this.form);
         this.fetchData();
         this.resetForm();
         this.$refs.closeModalButton.click(); // Assuming there is a ref on the close button to close the modal
@@ -133,8 +138,8 @@ export default {
     },
     async fetchData() {
       try {
-        const response = await axios.get('http://localhost:8000/suratMasuk');
-        this.telegramMasukData = response.data;
+        const response = await axios.get('http://localhost:8000/api/suratMasuk');
+        this.telegramMasukData = response.data.data;
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -145,10 +150,10 @@ export default {
         kepada: '',
         tembusan: '',
         klasifikasi: '',
-        jenisTelegram: '',
-        nomor: '',
-        waktuPenunjukan: '',
-        tanggalMasuk: '',
+        jenis_telegram: '',
+        no: '',
+        tanggal_waktu_penunjukan: '',
+        tanggal_masuk: '',
         isi: ''
       };
     }
