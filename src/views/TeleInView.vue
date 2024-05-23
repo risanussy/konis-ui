@@ -2,7 +2,10 @@
   <div class="card p-3 shadow">
     <h5>Telegram Masuk</h5>
     <br />
-    <button type="button" style="width: 120px" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalmasuk"><i class="fa-solid fa-file-circle-plus me-1"></i>Add Data</button>
+    <div class="tombol">
+      <button type="button" style="width: 120px" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalmasuk"><i class="fa-solid fa-file-circle-plus me-1"></i>Add Data</button>
+      <button @click="exportToExcel" class="btn btn-success mb-3 ms-2">Download Excel</button>
+    </div>
 
     <div class="modal fade" id="modalmasuk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -63,42 +66,45 @@
         </div>
       </div>
     </div>
-
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">No</th>
-          <th scope="col">Dari</th>
-          <th scope="col">Kepada</th>
-          <th scope="col">Tembusan</th>
-          <th scope="col">Klasifikasi</th>
-          <th scope="col">Jenis Telegram</th>
-          <th scope="col">Nomor</th>
-          <th scope="col">Waktu Penunjukan</th>
-          <th scope="col">Tanggal Masuk</th>
-          <th scope="col">Isi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in telegramMasukData" :key="item.id">
-          <td>{{ index + 1 }}</td>
-          <td>{{ item.dari }}</td>
-          <td>{{ item.kepada }}</td>
-          <td>{{ item.tembusan }}</td>
-          <td>{{ item.klasifikasi }}</td>
-          <td>{{ item.jenisTelegram }}</td>
-          <td>{{ item.nomor }}</td>
-          <td>{{ item.waktuPenunjukan }}</td>
-          <td>{{ item.tanggalMasuk }}</td>
-          <td>{{ item.isi }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">No</th>
+            <th scope="col">Dari</th>
+            <th scope="col">Kepada</th>
+            <th scope="col">Tembusan</th>
+            <th scope="col">Klasifikasi</th>
+            <th scope="col">Jenis Telegram</th>
+            <th scope="col">Nomor</th>
+            <th scope="col">Waktu Penunjukan</th>
+            <th scope="col">Tanggal Masuk</th>
+            <th scope="col">Isi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in telegramMasukData" :key="item.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.dari }}</td>
+            <td>{{ item.kepada }}</td>
+            <td>{{ item.tembusan }}</td>
+            <td>{{ item.klasifikasi }}</td>
+            <td>{{ item.jenisTelegram }}</td>
+            <td>{{ item.nomor }}</td>
+            <td>{{ item.waktuPenunjukan }}</td>
+            <td>{{ item.tanggalMasuk }}</td>
+            <td>{{ item.isi }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default {
   name: "TeleInView",
@@ -149,6 +155,20 @@ export default {
         tanggalMasuk: "",
         isi: "",
       };
+    },
+    exportToExcel() {
+      const worksheet = XLSX.utils.json_to_sheet(this.teletInData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "teletIn Data");
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      this.saveAsExcelFile(excelBuffer, "teletIn-data");
+    },
+    saveAsExcelFile(buffer, filename) {
+      const data = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+      saveAs(data, `${filename}_${new Date().getTime()}.xlsx`);
     },
   },
   mounted() {

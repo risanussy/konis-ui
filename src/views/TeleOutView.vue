@@ -2,7 +2,10 @@
   <div class="card p-3 shadow">
     <h5>Telegram Keluar</h5>
     <br />
-    <button type="button" style="width: 120px" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalmasuk"><i class="fa-solid fa-file-circle-plus me-1"></i>Add Data</button>
+    <div class="tombol">
+      <button type="button" style="width: 120px" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalmasuk"><i class="fa-solid fa-file-circle-plus me-1"></i>Add Data</button>
+      <button @click="exportToExcel" class="btn btn-success mb-3 ms-2">Download Excel</button>
+    </div>
 
     <div class="modal fade" id="modalmasuk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -106,6 +109,8 @@
 
 <script>
 import axios from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default {
   name: "TeleOutView",
@@ -158,6 +163,20 @@ export default {
         tanggalKeluar: "",
         isi: "",
       };
+    },
+    exportToExcel() {
+      const worksheet = XLSX.utils.json_to_sheet(this.teleOutData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "teleOut Data");
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      this.saveAsExcelFile(excelBuffer, "teleOut-data");
+    },
+    saveAsExcelFile(buffer, filename) {
+      const data = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8" });
+      saveAs(data, `${filename}_${new Date().getTime()}.xlsx`);
     },
   },
   mounted() {
